@@ -24,5 +24,13 @@ class TestClass(unittest.TestCase):
                                places=5,
                                msg="Symmetric solution is wrong!")
 
+    def test_pressure(self):
+        v0 = 1.0e-10
+        d = Droplet(initial_volume=v0)
+        d.h = d.h0 / 2
+        p1 = d.get_delta_stress()
+        p2 = d.get_delta_stress(gravity=True)
+        print(d.p0, p1, p2)
+
 if __name__ == "__main__":
     unittest.main()

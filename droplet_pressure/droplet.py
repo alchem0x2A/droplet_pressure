@@ -36,6 +36,8 @@ class Droplet(object):
     def __init_params(self):
         self.h0 = self.__solve_initial_height()
         self.h = self.h0
+        self.p0 = self.get_curve_pressure(gravity=False)
+        self.p0_gravity = self.get_curve_pressure(gravity=True)
 
     @property
     def r1(self):
@@ -55,6 +57,20 @@ class Droplet(object):
         # Update the calculated values of r1, r2 upon assign to h
         self.__cal_r1()
         self.__cal_r2()
+
+    def get_curve_pressure(self, gravity=False):
+        p = self.gamma * (1 / self.r1 + 1 / self.r2)
+        if gravity:
+            p += rho * self.h * g
+        return p
+
+    def get_delta_stress(self, gravity=False):
+        p = self.get_curve_pressure(gravity=gravity)
+        # delta to initial state
+        if gravity is True:
+            return p - self.p0_gravity
+        else:
+            return p - self.p0
 
     def __cal_r1(self):
         """calculate r1 using fsolve
