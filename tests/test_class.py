@@ -12,7 +12,10 @@ class TestClass(unittest.TestCase):
         self.assertAlmostEqual(v_sol, v0,
                                places=5,
                                msg="initial height is wrong!")
-        print(d.r1, d.r2)
+        self.assertAlmostEqual(d.r1, d.r2,
+                               places=5,
+                               msg="solution to r1 and r2 wrong!")
+        
     def test_sym(self):
         r = 1.0
         v_0 = (4 * pi / 3) * r ** 3

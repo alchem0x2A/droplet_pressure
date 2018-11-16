@@ -61,8 +61,16 @@ class Droplet(object):
         Required ingredients:
         v, h, theta_t, theta_b
         """
-        self.__r1 = None
-        pass
+        delta_t, delta_b = self.__split_h()
+        def _target(R):
+            V1 = V_sym(R, delta_t, self.theta_t)
+            V2 = V_sym(R, delta_b, self.theta_b)
+            return (V1 + V2) / 2 - self.v0
+        R_solution,  = fsolve(_target, x0=self.h)
+        # a1 = R_solution + delta * (1 - sin(theta1)) / (cos(theta1) + cos(theta2))
+        # a2 = R_solution + delta * (1 - sin(theta2)) / (cos(theta1) + cos(theta2))
+        # r = -delta / (cos(theta1) + cos(theta2))
+        self.__r1 = R_solution
 
     def __cal_r2(self):
         """calculate r2
