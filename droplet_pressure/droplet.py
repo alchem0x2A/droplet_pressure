@@ -34,17 +34,8 @@ class Droplet(object):
         self.__init_params()
 
     def __init_params(self):
-        self.h0 = solve_initial_height(self.v0,
-                                       self.theta_t,
-                                       self.theta_b)
-        self.__h = self.h0
-        self.__r1 = cal_r1(v=self.v0,
-                           h=self.h0,
-                           theta_t=self.theta_t,
-                           theta_b=self.theta_b)
-        self.__r2 = cal_r2(h=self.h0,
-                           theta_t=self.theta_t,
-                           theta_b=self.theta_b)
+        self.h0 = self.__solve_initial_height()
+        self.h = self.h0
 
     @property
     def r1(self):
@@ -61,28 +52,50 @@ class Droplet(object):
     @h.setter
     def h(self, h):
         self.__h = h
+        # Update the calculated values of r1, r2 upon assign to h
+        self.__cal_r1()
+        self.__cal_r2()
 
-def solve_initial_height(v0, theta_t, theta_b):
-    """Solve the h0 value
-    """
-    def func_g(theta):
-        A = ((1 + cos(theta)) / 2) ** 2
-        B = 2 - cos(theta)
-        return A * B
-    h0 = (3 * v0 / 4 / pi) ** (1 / 3)
-    h0 *= ((cos(theta_t) + cos(theta_b)) ** 3
-           / (func_g(theta_t) + func_g(theta_b) - 1)) ** (1 / 3)
-    return h0
+    def __cal_r1(self):
+        """calculate r1 using fsolve
+        Required ingredients:
+        v, h, theta_t, theta_b
+        """
+        self.__r1 = None
+        pass
+
+    def __cal_r2(self):
+        """calculate r2
+        Required ingredients:
+        h, theta_t, theta_b
+        """
+        self.__r2 = -self.h / (cos(self.theta_t) + cos(self.theta_b))
+
+    def __solve_initial_height(self):
+        """Solve the h0 value
+        """
+        def func_g(theta):
+            A = ((1 + cos(theta)) / 2) ** 2
+            B = 2 - cos(theta)
+            return A * B
+        h0 = (3 * self.v0 / 4 / pi) ** (1 / 3)
+        # Only the purely real values
+        h0 *= ((cos(self.theta_t) + cos(self.theta_b)) ** 3
+               / (func_g(self.theta_t) + func_g(self.theta_b) - 1)) ** (1 / 3)
+        return h0
+    
+    def __split_h(self):
+        """Split the height into delta_t and delta_b
+        """
+        base = cos(self.theta_t) + cos(self.theta_b)
+        delta_t = self.h * cos(self.theta_t) / base
+        delta_b = self.h * cos(self.theta_b) / base
+        return delta_t, delta_b
 
 
-def split_h(h, theta_t, theta_b):
-    """Split the height into delta_t and delta_b
-    """
-    base = cos(theta_t) + cos(theta_b)
-    delta_t = h * cos(theta_t) / base
-    delta_b = h * cos(theta_b) / base
-    return delta_t, delta_b
-
+##########################
+# Useful functions below #
+##########################
 
 def f1(theta):
     res = theta - pi / 2 + sin(2 * theta - pi) / 2 + \
@@ -103,7 +116,7 @@ def V_sym(R, delta, theta):
     Symmetric case
     """
     # _, _, r = split_h(2 * delta, theta, theta)  # H = 2 * delta
-    r = cal_r2(2 * delta, theta, theta)
+    r = -delta / cos(theta)
     a = R + delta * (1 - sin(theta)) / cos(theta)
     a_ = R - r + r * sin(theta)
     V = 2 * pi * a ** 2 * delta \
@@ -112,21 +125,10 @@ def V_sym(R, delta, theta):
     return V
 
 
-def cal_r1(v, h, theta_t, theta_b):
-    """calculate r1 using fsolve
-    """
-    return None
 
-
-def cal_r2(h, theta_t, theta_b):
-    """calculate r2
-    """
-    return -h / (cos(theta_t) + cos(theta_b))
-
-
-"""Dummy function only for test purpose
-"""
-
+####################################
+# Dummy function only for test use #
+####################################
 
 def hello():
     print("Hello!")
