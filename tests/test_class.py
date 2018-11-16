@@ -1,5 +1,5 @@
 import droplet_pressure
-from droplet_pressure.droplet import Droplet, pi
+from droplet_pressure.droplet import Droplet, pi, V_sym
 import unittest
 
 class TestClass(unittest.TestCase):
@@ -12,6 +12,13 @@ class TestClass(unittest.TestCase):
         self.assertAlmostEqual(v_sol, v0,
                                places=5,
                                msg="initial height is wrong!")
+    def test_sym(self):
+        r = 1.0
+        v_0 = (4 * pi / 3) * r ** 3
+        v_cal = V_sym(r, r, pi)
+        self.assertAlmostEqual(v_cal, v_0,
+                               places=5,
+                               msg="Symmetric solution is wrong!")
 
 if __name__ == "__main__":
     unittest.main()
