@@ -15,7 +15,7 @@ def gen_patches(drop, h, resolution=64):
         vert = r * numpy.vstack((numpy.cos(t),
                                  numpy.sin(t))).T
         return vert + center
-
+    print(h)
     drop.h = h                  # set height and update
     delta_t, delta_b = drop.get_separate_height()
     r1 = drop.r1; r2 = drop.r2
@@ -48,6 +48,7 @@ def gen_patches(drop, h, resolution=64):
                            facecolor="gray")
 
     pressure = drop.get_delta_stress()
+    print(pressure)
     return drop_patch, circle, arr1, arr2, pressure
 
 def main(vol=1.0e-10,
@@ -58,6 +59,7 @@ def main(vol=1.0e-10,
                    theta_t=theta_t,
                    theta_b=theta_b)
     h0 = drop.h0
+    print(h0)
     fig = plt.figure(figsize=(6, 3))
     plt.style.use("science")
     # Setup acis
@@ -66,10 +68,10 @@ def main(vol=1.0e-10,
     ax1.set_ylim(0, h0 * 1.25)
     ax1.set_xlim(-h0, h0)
     ax2.set_xlim(0, 0.25)
-    ax2.set_ylim(0, 2000)
+    ax2.set_ylim(0, 500)
     dp, c, arr1, arr2, pre = gen_patches(drop, h0)
     patches = [ax1.add_patch(p) for p in (dp, c, arr1, arr2)]
-    line,  = ax2.plot([0], [pre], "-o")
+    line,  = ax2.plot([0], [pre], "-")
     patches.append(line)
     # update frames
     # limit to 0.25 * h
@@ -78,7 +80,7 @@ def main(vol=1.0e-10,
         h = h0 - 0.25 / total_frames * i * h0
         sigma = 1 - h / h0
         ax1.patches = []
-        dp, c, arr1, arr2, pre = gen_patches(drop, h0)
+        dp, c, arr1, arr2, pre = gen_patches(drop, h)
         patches[:-1] = [dp, c, arr1, arr2]
         l = patches[-1]
         x, y = l.get_data()
