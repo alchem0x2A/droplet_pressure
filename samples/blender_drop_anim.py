@@ -78,7 +78,21 @@ def gen_timeline(curv_obj,
         sk.keyframe_insert("eval_time", frame=tp1)
         sk.keyframe_insert("eval_time", frame=tp2)
     if other_obj is not None:
-        pass
+        for i in range(repeat):
+            start = start_frame + (period + stop) * 2 * i
+            tp1 = start + period
+            tp2 = tp1 + stop
+            tp3 = tp2 + period
+            bpy.context.scene.frame_set(start)
+            other_obj.location.z = curv_obj.location.z \
+                                   + curv_obj.dimensions.z
+            other_obj.keyframe_insert("location", frame=start)
+            other_obj.keyframe_insert("location", frame=tp3)
+            bpy.context.scene.frame_set(tp1)
+            other_obj.location.z = curv_obj.location.z \
+                                   + curv_obj.dimensions.z
+            other_obj.keyframe_insert("location", frame=tp1)
+            other_obj.keyframe_insert("location", frame=tp2)
     return
         
     
@@ -97,7 +111,7 @@ scene.objects.link(curv_obj)
 curv_obj.layers[1] = True
 add_shape_keys(curv_obj, param_lines[1:])
 curv_obj.location = (0, 0, z_shift)
-gen_timeline(curv_obj)
+gen_timeline(curv_obj, other_obj=bpy.data.objects["top"])
 
 
 
