@@ -5,6 +5,8 @@ from matplotlib.animation import FuncAnimation, FFMpegFileWriter, FFMpegWriter
 import numpy
 from numpy import pi, sin, cos, radians
 from scipy.stats import linregress
+import os
+from os.path import abspath, dirname, join
 
 def gen_patches(drop, h, resolution=64):
     """Generate patches for droplet at height h
@@ -156,11 +158,13 @@ def main(vol=3.0e-10,
     if show:
         plt.show()
     else:
-        ani.save("test.mp4",
-             writer=FFMpegWriter(fps=12,
-                                 codec="libx264",
-                                 extra_args=["-pix_fmt", "yuv420p",
-                                            "-crf", "20"]),
+        curr_dir = dirname(abspath(__file__))
+        print(curr_dir)
+        ani.save(join(curr_dir, "../results", "anim_pres.mp4"),
+                writer=FFMpegWriter(fps=12,
+                                    codec="libx264",
+                                    extra_args=["-pix_fmt", "yuv420p",
+                                                "-crf", "20"]),
                  dpi=600,
                  savefig_kwargs={'transparent': True})
 

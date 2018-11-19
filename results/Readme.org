@@ -1,0 +1,2 @@
+* Usage
+This is the folder intended for the results output from the samples and tests. Do not delete!
