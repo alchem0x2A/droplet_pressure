@@ -57,7 +57,8 @@ def gen_patches(drop, h, resolution=64):
 def main(vol=1.0e-10,
          theta_t=radians(145),
          theta_b=radians(165),
-         total_frames=50):
+         total_frames=50,
+         show=False):
     drop = Droplet(initial_volume=vol,
                    theta_t=theta_t,
                    theta_b=theta_b)
@@ -67,15 +68,17 @@ def main(vol=1.0e-10,
     plt.style.use("science")
     # Setup acis
     ax1 = fig.add_subplot(121, aspect="equal")
+    plt.setp(ax1.spines.values(), linewidth=0.5)
     ax2 = fig.add_subplot(122)
     ax1.set_ylim(-h0 * 0.05, h0 * 1.25)
     ax1.set_xlim(-h0 * 0.75, h0 * 0.75)
     ax1.set_xlabel("$r$"); ax1.set_ylabel("$z$")
     ax1.set_xticks([]); ax1.set_yticks([])
     ax1.axvline(x=0.0, ls="--",
-                color="gray")
+                color="#e3e9f2", alpha=0.5,
+                zorder=20)
     # ax1.set_axis_off()
-    ax1.set_title(("Stress $\\varepsilon = "
+    ax1.set_title(("Laplace Pressure $p = "
                    " \\gamma (R_{1}^{-1} + R_{2}^{-1})$"))
     ax2.set_xlim(0, 0.25)
     ax2.set_ylim(0, 500)
@@ -87,7 +90,7 @@ def main(vol=1.0e-10,
     line,  = ax2.plot([0], [pre], "-")
     patches.append(line)
     text1 = ax1.annotate(xy=pr, s="$R_{1}$",
-                         ha="left", va="bottom",
+                         ha="left", va="center",
                          color="#9b9b9b")
     text2 = ax1.annotate(xy=pt, s="$R_{2}$",
                          ha="left",
@@ -117,12 +120,16 @@ def main(vol=1.0e-10,
 
     ani = FuncAnimation(fig, update, frames=total_frames, blit=True)
     plt.tight_layout()
-    ani.save("test.mp4",
+    if show:
+        plt.show()
+    else:
+        ani.save("test.mp4",
              writer=FFMpegWriter(fps=12,
                                  codec="libx264",
                                  extra_args=["-pix_fmt", "yuv420p",
-                                             "-crf", "20"]),
-             savefig_kwargs={'transparent': True})
+                                            "-crf", "20"]),
+                 dpi=600,
+                 savefig_kwargs={'transparent': True})
 
 if __name__ == "__main__":
     main()
