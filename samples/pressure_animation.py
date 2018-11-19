@@ -1,7 +1,7 @@
 from droplet_pressure.droplet import Droplet
 import matplotlib.pyplot as plt
 from matplotlib.patches import Arc, Path, PathPatch, Circle, FancyArrowPatch
-from matplotlib.animation import FuncAnimation
+from matplotlib.animation import FuncAnimation, FFMpegFileWriter, FFMpegWriter
 from matplotlib.collections import PatchCollection
 import numpy
 from numpy import pi, sin, cos, radians
@@ -28,24 +28,25 @@ def gen_patches(drop, h, resolution=64):
                   pi - (t_t - pi / 2),
                   pi + (t_b - pi / 2))
     p_b = v_r[0]; p_t = v_r[-1]
-    verts = numpy.concatenate((v_r, v_l, (p_t, p_t)))  # vertices for patch
+    verts = numpy.concatenate((v_r, v_l, (p_b, p_b)))  # vertices for patch
     codes = [Path.MOVETO] + [Path.LINETO] * (resolution * 2) \
             + [Path.CLOSEPOLY]  # codes for path
-    drop_patch = PathPatch(Path(verts, codes))
+    drop_patch = PathPatch(Path(verts, codes),
+                           facecolor="#ccdfff")
     drop_patch.set_alpha(0.5)
     circle = Circle(center_r, radius=r2,
                     ls="--", fill=False,
-                    edgecolor="red")
+                    edgecolor="#ffb4a5")
 
     arr1 = FancyArrowPatch((0, delta_b), (r1, delta_b),
-                           mutation_scale=30,
+                           mutation_scale=10,
                            linewidth=0,
-                           facecolor="black")
+                           facecolor="#9b9b9b")
 
     arr2 = FancyArrowPatch(center_r, p_t,
-                           mutation_scale=30,
+                           mutation_scale=10,
                            linewidth=0,
-                           facecolor="gray")
+                           facecolor="#ffa047")
 
     pressure = drop.get_delta_stress()
     print(pressure)
@@ -65,10 +66,15 @@ def main(vol=1.0e-10,
     # Setup acis
     ax1 = fig.add_subplot(121, aspect="equal")
     ax2 = fig.add_subplot(122)
-    ax1.set_ylim(0, h0 * 1.25)
-    ax1.set_xlim(-h0, h0)
+    ax1.set_ylim(-h0 * 0.05, h0 * 1.25)
+    ax1.set_xlim(-h0 * 0.75, h0 * 0.75)
+    ax1.set_axis_off()
+    ax1.set_title(("Stress $\\varepsilon = "
+                   " \\gamma (R_{1}^{-1} + R_{2}^{-1})$"))
     ax2.set_xlim(0, 0.25)
     ax2.set_ylim(0, 500)
+    ax2.set_xlabel("Strain")
+    ax2.set_ylabel("Stress (Pa)")
     dp, c, arr1, arr2, pre = gen_patches(drop, h0)
     patches = [ax1.add_patch(p) for p in (dp, c, arr1, arr2)]
     line,  = ax2.plot([0], [pre], "-")
@@ -77,19 +83,26 @@ def main(vol=1.0e-10,
     # limit to 0.25 * h
     def update(i):
         print(i)
-        h = h0 - 0.25 / total_frames * i * h0
+        h = h0 - 0.25 / (total_frames - 1) * i * h0
         sigma = 1 - h / h0
         ax1.patches = []
         dp, c, arr1, arr2, pre = gen_patches(drop, h)
-        patches[:-1] = [dp, c, arr1, arr2]
+        patches[:-1] = [ax1.add_patch(p) for p in \
+                        [dp, c, arr1, arr2]]
         l = patches[-1]
         x, y = l.get_data()
         l.set_data((numpy.concatenate((x, [sigma])),
                     numpy.concatenate((y, [pre]))))
         return patches
 
-    ani = FuncAnimation(fig, update, frames=total_frames)
-    plt.show()
+    ani = FuncAnimation(fig, update, frames=total_frames, blit=True)
+    plt.tight_layout()
+    ani.save("test.mp4",
+             writer=FFMpegWriter(fps=12,
+                                 codec="libx264",
+                                 extra_args=["-pix_fmt", "yuv420p",
+                                             "-crf", "20"]),
+             savefig_kwargs={'transparent': True})
 
 if __name__ == "__main__":
     main()

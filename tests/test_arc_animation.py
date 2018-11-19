@@ -77,7 +77,7 @@ def update(i):
     return ax.patches
 
 anim = FuncAnimation(fig, func=update, init_func=init, frames=25)
-plt.show()
+# plt.show()
     
 # ax.add_collection(collect)
 # plt.ion()

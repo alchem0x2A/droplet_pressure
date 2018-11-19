@@ -58,6 +58,13 @@ class Droplet(object):
         self.__cal_r1()
         self.__cal_r2()
 
+    """Get delta_t  and delta_b
+    """ 
+    def get_separate_height(self):
+        delta_t, delta_b = self.__split_h()
+        return delta_t, delta_b
+        
+
     def get_curve_pressure(self, gravity=False):
         p = self.gamma * (1 / self.r1 + 1 / self.r2)
         if gravity:
