@@ -20,7 +20,7 @@ def gen_params(drop, h):
     params_pack = (h / h0,      # percentage?
                    (r1 - r2) / h0,  # x for center of C2
                    delta_b / h0,
-                   r2, t_b, t_t)     # r2 and two angles
+                   r2 / h0, t_b, t_t)     # r2 and two angles
     return params_pack
 
 def main(vol=3.0e-10,
@@ -33,7 +33,7 @@ def main(vol=3.0e-10,
                    theta_b=theta_b)
     h0 = drop.h0
     lines = []
-    lines.append("#Percentage,x0,y0,delta_b,theta_b,theta_t\n")
+    lines.append("#Percentage,x0,y0,r2,theta_b,theta_t\n")
     for h in numpy.linspace(h0, h0 * (1- max_strain), frames):
         params = gen_params(drop, h)
         line = ",".join(map(lambda s: "{:.3f}".format(s),
