@@ -111,7 +111,8 @@ curv_obj.layers[1] = True
 curv_obj.data.materials.append(bpy.data.materials["Hg"])
 add_shape_keys(curv_obj, param_lines[1:])
 curv_obj.location = (0, 0, z_shift)
-gen_timeline(curv_obj, other_obj=bpy.data.objects["drainZ"])
+gen_timeline(curv_obj, other_obj=bpy.data.objects["drain"],
+             start_frame=22)
 
 
 
