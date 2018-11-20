@@ -1,10 +1,19 @@
-* A Python Module for Calculating Things about A Droplet between Parallel Plates
+* A Python Module for Simulating Droplets between Plates
 =droplet_pressure= is a python module for simulating droplet shape
 change between parallel plates.
 
+** Basic Idea
 Basic idea behind =droplet_pressure= is the near-spherical assumption
 of the droplet boundary, which inspired by [[http://doi.wiley.com/10.1002/9781118401323][Berthier, J. & Brakke,
 K. A. The Physics of Microdroplets]]. This module has been used to
-generate the figures and animations for [[https://onlinelibrary.wiley.com/doi/full/10.1002/smll.201804006][this publication]] ($LaTeX$
+generate the figures and animations for [[https://onlinelibrary.wiley.com/doi/full/10.1002/smll.201804006][this publication]] (LaTeX
 source codes can be found [[https://github.com/lovaulonze/paper.IFET][here]]).
+
+** Usage
+Import the module by:
+#+BEGIN_SRC python
+from droplet_pressure.droplet import Droplet
+#+END_SRC
+
+
 
