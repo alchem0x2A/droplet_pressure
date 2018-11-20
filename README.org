@@ -10,10 +10,37 @@ generate the figures and animations for [[https://onlinelibrary.wiley.com/doi/fu
 source codes can be found [[https://github.com/lovaulonze/paper.IFET][here]]).
 
 ** Usage
+*Requirements*
+- =python= version 3.4+ 
+- =numpy= and =scipy= (should also work for most versions, to be tested)
+- =matplotlib= version 2.0.0+ (to run examples)
+- =blender= version 2.70+ (to run the 3D animation)
+
 Import the module by:
 #+BEGIN_SRC python
 from droplet_pressure.droplet import Droplet
 #+END_SRC
 
+There are several tests to show basic functionalities, run them by:
+#+BEGIN_SRC shell
+python -m unittest tests/test_XXX.py
+#+END_SRC
+
+We also provide several examples showing the plot and animation of this module, check them by:
+#+BEGIN_SRC shell
+python -m  example.YYY
+#+END_SRC
+
+*** Special requirement for running 3D animation
+We provide a blender model file =3D_animation_base.blend= for
+generating the 3D animation. The script =examples/blender_gen_anim.py=
+is embedded.
+
+If you wish to generate the file from scratch, please first run the
+script =blender_gen_geometry.py= to get the parameters of the droplet
+per frame, and read the generated csv files using
+=examples/blender_gen_anim.py=.
+
+** Gallery
 
 
