@@ -60,7 +60,8 @@ def gen_patches(drop, h, resolution=64):
 def main(vol=3.0e-10,
          theta_t=radians(145),
          theta_b=radians(165),
-         total_frames=50,
+         total_frames=56,
+         start_frames=6,        # Show R1 = R2
          final_frames=4,
          show=False):
     drop = Droplet(initial_volume=vol,
@@ -72,7 +73,6 @@ def main(vol=3.0e-10,
     plt.style.use("science")
     # Setup acis
     ax1 = fig.add_subplot(121, aspect="equal")
-    plt.setp(ax1.spines.values(), linewidth=0.5)
     ax2 = fig.add_subplot(122)
     ax1.set_ylim(-h0 * 0.05, h0 * 1.25)
     ax1.set_xlim(-h0 * 0.75, h0 * 0.75)
@@ -105,7 +105,8 @@ def main(vol=3.0e-10,
     reg_line, = ax2.plot([], [], "--",
                         color="#ffae51")
     text3 = ax2.annotate(xy=(0, 0), s="", color="black")
-    patches += [reg_line, text3]
+    text4 = ax1.annotate(xy=(0, 0), s="", color="black")
+    patches += [reg_line, text3, text4]
     print(len(patches))
     reg_xy = [None, None]
     
@@ -113,9 +114,19 @@ def main(vol=3.0e-10,
     # limit to 0.25 * h
     def update(i):
         print(i)
-        if i < (total_frames - final_frames):
+        if  i < start_frames:
+            # only add the frames showing R1 = R2
+            text4 = patches[-1]
+            text4.set_text("Zero strain, $R_{1}=R_{2}$")
+            text4.set_x(0.05 * h0); text4.set_y(1.2 * h0)
+            text4.set_horizontalalignment("left")
+            text4.set_verticalalignment("center")
+        elif i < (total_frames - final_frames):
+            text4 = patches[-1]
+            if text4.get_text() != "":
+                text4.set_text("")  # mute the text output
             # update the patches and pressure only
-            h = h0 - 0.25 / (total_frames - final_frames - 1) * i * h0
+            h = h0 - 0.25 / (total_frames - final_frames - start_frames - 1) * (i - start_frames) * h0
             sigma = 1 - h / h0
             ax1.patches = []
             dp, c, arr1, arr2, pre, pr, pt = gen_patches(drop, h)
@@ -144,7 +155,7 @@ def main(vol=3.0e-10,
             l2.set_data((xx[:i_frame], yy[:i_frame]))
             # Add the fitted value to last frame
             if i == total_frames - 1:
-                text3 = patches[-1]
+                text3 = patches[8]
                 text3.set_x(xx[1]); text3.set_y(yy[1])
                 s = "{:.1e}".format(reg_xy[0]).split("e")
                 base = float(s[0]); p = int(s[1])
