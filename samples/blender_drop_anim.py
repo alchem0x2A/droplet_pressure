@@ -61,16 +61,18 @@ def add_shape_keys(curv_obj, param_lists):
 def gen_func_curve(total_x, #total length x-direction
                    total_y, #total length in y-direction
                    start_frame=1,
-                   period=5, stop=1, repeat=4):
+                   period=5, stop=1, repeat=4,
+                   fine_grid=5):
     """Create the curved path for time function
     """
-    frames_section = (period + stop) * 2
+    frames_section = (period + stop) * 2 * fine_grid
     total_frames = frames_section * repeat
+    total_frames_render = total_frames / fine_grid
     
     # velocity for x and y
-    v_x = total_x / total_frames; v_y = total_y / period
+    v_x = total_x / total_frames; v_y = total_y / period / fine_grid
     # frame stop points each section
-    start = 0; tp1 = period; tp2 = tp1 + stop; tp3 = tp2 + period
+    start = 0; tp1 = period * fine_grid; tp2 = tp1 + stop * fine_grid; tp3 = tp2 + period * fine_grid
     # generate vertex
     verts = []
     for i in range(total_frames):
@@ -97,11 +99,12 @@ def gen_func_curve(total_x, #total length x-direction
     curv_obj.data.materials.append(bpy.data.materials["glowing_mater"])
     #set modifiers
     mod = curv_obj.modifiers.new("build", "BUILD")
-    mod.frame_start = start_frame; mod.frame_duration = total_frames
+    mod.frame_start = start_frame; mod.frame_duration = total_frames_render
     #set shape
     curv_obj.data.fill_mode = "FULL"
-    curv_obj.data.bevel_depth = 0.028
+    curv_obj.data.bevel_depth = 0.035
     curv_obj.data.bevel_resolution = 4
+    curv_obj.data.cycles_visibility.glossy = False #Do not render glossy shade
     return curv_obj
     
     
@@ -168,7 +171,8 @@ add_shape_keys(curv_obj, param_lines[1:])
 curv_obj.location = (0, 0, z_shift)
 gen_timeline(curv_obj, other_obj=bpy.data.objects["drain"],
              time_curve=True,
-             start_frame=22)
+             start_frame=22,
+             repeat=5)
 
 
 
