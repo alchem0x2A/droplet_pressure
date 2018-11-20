@@ -1,2 +1,10 @@
 * Usage
 This is the folder intended for the results output from the samples and tests. Do not delete!
+
+** Possible output files
+- 2D animation from =samples/pressure_animation.py=
+
+- 3D animations from =samples/blender_drop_anim.py=
+
+- Droplet parameters from =samples/blender_gen_geometry.py=
+
