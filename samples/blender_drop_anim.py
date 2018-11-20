@@ -103,15 +103,15 @@ def gen_timeline(curv_obj,
 
 f_name = "/Users/tiantian/polybox/Research/3-(Done)-graphene-F16CuPc-hydrophobic/droplet-pressure/results/blender_input.csv"
 z_shift = 0.72
-#verts = [(0, 0, 0), (0, 1, 0), (0, 1, 1), (0, 0, 1)] #test vertices
 param_lines = read_csv(f_name)
 curv_obj = gen_revolved(gen_verts(param_lines[0]))
 scene = bpy.context.scene
 scene.objects.link(curv_obj)
 curv_obj.layers[1] = True
+curv_obj.data.materials.append(bpy.data.materials["Hg"])
 add_shape_keys(curv_obj, param_lines[1:])
 curv_obj.location = (0, 0, z_shift)
-gen_timeline(curv_obj, other_obj=bpy.data.objects["top"])
+gen_timeline(curv_obj, other_obj=bpy.data.objects["drainZ"])
 
 
 
